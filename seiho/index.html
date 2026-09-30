@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>生命保険料控除 計算【2026年・令和8年分】｜年末調整の控除額を自動計算（地震保険料控除も）</title>
+<meta name="description" content="1年間に払った保険料を入れるだけで、年末調整の保険料控除申告書に書く生命保険料控除（一般・介護医療・個人年金、新旧対応）と地震保険料控除の金額を自動計算。2026年の23歳未満の扶養親族がいる場合の上乗せ（最大6万円）にも対応しています。">
+<link rel="canonical" href="https://harryquad.github.io/nenmatsu/seiho/">
+<link rel="stylesheet" href="../assets/style.css">
+<style>.grp{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}.grp h3{margin:0 0 8px;font-size:1rem}</style>
+</head>
+<body>
+<header class="site-header"><div><a href="/nenmatsu/">年収の壁・年末調整 かんたん計算</a></div></header>
+<div class="wrap">
+  <h1>生命保険料控除・地震保険料控除 計算（2026年）</h1>
+  <p class="lead">1年間に払った保険料を入れると、年末調整の<strong>保険料控除申告書に書く控除額</strong>を自動で計算します。2026年（令和8年分）は、<strong>23歳未満の扶養親族がいる人</strong>の一般生命保険料控除の上限が6万円に上がっています。</p>
+
+  <div class="card">
+    <p class="hint">金額は、保険会社から届く「控除証明書」の<strong>「申告額」（12月までの見込み額）</strong>を円単位で入れてください。同じ区分に複数の保険がある場合は合計します。「新」は2012年以降の契約、「旧」は2011年までの契約です（証明書に書いてあります）。</p>
+    <div class="grp"><h3>一般の生命保険料（死亡保険・終身保険など）</h3>
+      <div class="row">
+        <div class="field"><label for="gNew">新制度</label><input type="number" id="gNew" min="0" value="0"></div>
+        <div class="field"><label for="gOld">旧制度</label><input type="number" id="gOld" min="0" value="0"></div>
+      </div>
+      <div class="checks"><label><input type="checkbox" id="child">23歳未満の扶養親族がいる（2026年12月31日時点）</label></div>
+    </div>
+    <div class="grp"><h3>介護医療保険料（医療保険・がん保険など）</h3>
+      <div class="field" style="margin:0"><label for="kNew">新制度のみ</label><input type="number" id="kNew" min="0" value="0"></div>
+    </div>
+    <div class="grp"><h3>個人年金保険料</h3>
+      <div class="row">
+        <div class="field"><label for="pNew">新制度</label><input type="number" id="pNew" min="0" value="0"></div>
+        <div class="field"><label for="pOld">旧制度</label><input type="number" id="pOld" min="0" value="0"></div>
+      </div>
+    </div>
+    <div class="grp"><h3>地震保険料</h3>
+      <div class="row">
+        <div class="field"><label for="eq">地震保険料</label><input type="number" id="eq" min="0" value="0"></div>
+        <div class="field"><label for="eqOld">旧長期損害保険料</label><input type="number" id="eqOld" min="0" value="0">
+          <div class="hint">2006年までに契約した10年以上の火災保険など</div></div>
+      </div>
+    </div>
+    <div class="field"><label for="annual">あなたの年収（節税額の計算用・任意）</label><input type="number" id="annual" min="0" value="500">
+      <div class="hint">万円単位</div></div>
+    <button id="calc">控除額を計算する</button>
+  </div>
+
+  <div class="card" id="result" hidden></div>
+
+  <div class="ad">広告スペース</div>
+
+  <div class="card faq">
+    <h2>生命保険料控除のよくある質問</h2>
+    <h3>控除額の上限は？</h3>
+    <p>所得税は、一般・介護医療・個人年金の各区分で最大4万円、合計で最大12万円です。2026年分は、23歳未満の扶養親族がいる場合、一般生命保険料（新制度）の上限が6万円になりますが、3区分の合計の上限は12万円のままです。住民税は各区分で最大2.8万円、合計で最大7万円です。</p>
+    <h3>新制度と旧制度の両方がある場合は？</h3>
+    <p>同じ区分に新旧の両方がある場合は、「旧制度だけで計算した額」と「新旧それぞれの控除額の合計（上限4万円）」のうち、多い方を選べます。このツールは自動で多い方を選んでいます。</p>
+    <h3>いくら税金が安くなる？</h3>
+    <p>控除額にあなたの所得税率（5〜45%）と住民税率（10%）をかけた金額が、安くなる税金の目安です。たとえば所得税率10%で控除額12万円なら、所得税が約1.2万円、住民税が約7,000円（住民税の控除額7万円×10%）安くなります。</p>
+  </div>
+
+  <div class="card" id="related"></div>
+
+  <footer>国税庁の生命保険料控除・地震保険料控除の計算方法、および「源泉所得税の改正のあらまし（令和8年4月）」をもとにしています。控除額の1円未満の端数は切り上げています。</footer>
+</div>
+
+<script src="../assets/site.js"></script>
+<script src="../assets/calc.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const v = id => Math.max(0, Math.floor(Number($(id).value) || 0));
+const up = n => Math.ceil(n);
+
+// 所得税
+const itNew = (p, child) => child
+  ? (p <= 30000 ? p : p <= 60000 ? up(p / 2 + 15000) : p <= 120000 ? up(p / 4 + 30000) : 60000)
+  : (p <= 20000 ? p : p <= 40000 ? up(p / 2 + 10000) : p <= 80000 ? up(p / 4 + 20000) : 40000);
+const itOld = p => (p <= 25000 ? p : p <= 50000 ? up(p / 2 + 12500) : p <= 100000 ? up(p / 4 + 25000) : 50000);
+// 住民税
+const rtNew = p => (p <= 12000 ? p : p <= 32000 ? up(p / 2 + 6000) : p <= 56000 ? up(p / 4 + 14000) : 28000);
+const rtOld = p => (p <= 15000 ? p : p <= 40000 ? up(p / 2 + 7500) : p <= 70000 ? up(p / 4 + 17500) : 35000);
+
+// 新旧の両方がある区分：旧だけの額と、新旧合計（上限cap）の多い方
+const combine = (n, o, fNew, fOld, cap) => {
+  if (!o) return n ? fNew(n) : 0;
+  if (!n) return fOld(o);
+  return Math.max(fOld(o), Math.min(fNew(n) + fOld(o), cap));
+};
+
+function calc() {
+  const out = $("result");
+  out.hidden = false;
+  const child = $("child").checked;
+  const g = { it: combine(v("gNew"), v("gOld"), p => itNew(p, child), itOld, child ? 60000 : 40000), rt: combine(v("gNew"), v("gOld"), rtNew, rtOld, 28000) };
+  const k = { it: v("kNew") ? itNew(v("kNew"), false) : 0, rt: v("kNew") ? rtNew(v("kNew")) : 0 };
+  const pn = { it: combine(v("pNew"), v("pOld"), p => itNew(p, false), itOld, 40000), rt: combine(v("pNew"), v("pOld"), rtNew, rtOld, 28000) };
+  const lifeIT = Math.min(120000, g.it + k.it + pn.it), lifeRT = Math.min(70000, g.rt + k.rt + pn.rt);
+
+  const e = v("eq"), eo = v("eqOld");
+  const eqIT = Math.min(50000, Math.min(e, 50000) + (eo <= 10000 ? eo : eo <= 20000 ? up(eo / 2 + 5000) : 15000));
+  const eqRT = Math.min(25000, Math.min(up(e / 2), 25000) + (eo <= 5000 ? eo : eo <= 15000 ? up(eo / 2 + 2500) : 10000));
+
+  const annual = (Number($("annual").value) || 0) * MAN;
+  const rate = annual ? supporterRate(annual, false, lifeIT + eqIT) : 0;
+  const save = Math.floor((lifeIT + eqIT) * rate * 1.021 + (lifeRT + eqRT) * 0.1);
+
+  out.innerHTML = `
+    <div class="big">
+      <div class="stat good"><div class="k">生命保険料控除（所得税）</div><div class="v">${yen(lifeIT)}</div></div>
+      <div class="stat good"><div class="k">地震保険料控除（所得税）</div><div class="v">${yen(eqIT)}</div></div>
+      <div class="stat"><div class="k">安くなる税金（目安）</div><div class="v">${annual ? yen(save) : "年収を入力"}</div></div>
+    </div>
+    <table class="info">
+      <tr><th>区分</th><th class="num">所得税の控除額</th><th class="num">住民税の控除額</th></tr>
+      <tr><td>一般の生命保険料${child && v("gNew") ? "（23歳未満の扶養親族あり）" : ""}</td><td class="num">${yen(g.it)}</td><td class="num">${yen(g.rt)}</td></tr>
+      <tr><td>介護医療保険料</td><td class="num">${yen(k.it)}</td><td class="num">${yen(k.rt)}</td></tr>
+      <tr><td>個人年金保険料</td><td class="num">${yen(pn.it)}</td><td class="num">${yen(pn.rt)}</td></tr>
+      <tr><td><strong>生命保険料控除の合計</strong></td><td class="num"><strong>${yen(lifeIT)}</strong></td><td class="num"><strong>${yen(lifeRT)}</strong></td></tr>
+      <tr><td><strong>地震保険料控除</strong></td><td class="num"><strong>${yen(eqIT)}</strong></td><td class="num"><strong>${yen(eqRT)}</strong></td></tr>
+    </table>
+    ${g.it + k.it + pn.it > 120000 ? '<p class="note">3区分の合計が12万円を超えたため、上限の12万円になっています。</p>' : ""}
+    ${annual ? `<p class="note">所得税率${Math.round(rate * 100)}%として、所得税が約${yen((lifeIT + eqIT) * rate * 1.021)}、住民税が約${yen((lifeRT + eqRT) * 0.1)}安くなる計算です。</p>` : ""}
+    <p class="note">年末調整でいくら戻ってくるかは → <a href="/nenmatsu/kanpu/">年末調整 還付金 計算</a>（この控除額を入れて計算できます）</p>`;
+  try { localStorage.setItem("nenmatsu-insurance", JSON.stringify({ life: lifeIT, eq: eqIT })); } catch {}
+  out.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("calc").addEventListener("click", calc);
+</script>
+</body>
+</html>

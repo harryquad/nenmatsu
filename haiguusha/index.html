@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>配偶者控除・配偶者特別控除 計算【2026年・令和8年分】｜136万円・207万円の壁</title>
+<meta name="description" content="本人と配偶者の年収を入れるだけで、配偶者控除・配偶者特別控除の控除額（所得税・住民税）と節税額を計算。2026年（令和8年分）の改正で配偶者控除は年収136万円まで、配偶者特別控除は207万円までに。控除額の早見表つきの無料ツールです。">
+<link rel="canonical" href="https://harryquad.github.io/nenmatsu/haiguusha/">
+<link rel="stylesheet" href="../assets/style.css">
+<style>tr.me td{background:var(--accent-soft);font-weight:700}</style>
+</head>
+<body>
+<header class="site-header"><div><a href="/nenmatsu/">年収の壁・年末調整 かんたん計算</a></div></header>
+<div class="wrap">
+  <h1>配偶者控除・配偶者特別控除 計算（2026年）</h1>
+  <p class="lead">本人と配偶者の年収から、<strong>配偶者控除・配偶者特別控除の控除額</strong>（所得税・住民税）と、<strong>税金がいくら安くなるか</strong>を計算します。2026年（令和8年分）の改正に対応しています。</p>
+
+  <div class="card">
+    <div class="row">
+      <div class="field"><label for="self">本人（控除を受ける人）の年収</label><input type="number" id="self" min="0" value="500">
+        <div class="hint">万円単位（給与の額面）</div></div>
+      <div class="field"><label for="sp">配偶者の年収</label><input type="number" id="sp" min="0" value="150">
+        <div class="hint">万円単位（給与の額面、交通費を除く）</div></div>
+    </div>
+    <div class="field">
+      <div class="checks"><label><input type="checkbox" id="old">配偶者が70歳以上（2026年12月31日時点）</label></div>
+    </div>
+    <button id="calc">計算する</button>
+  </div>
+
+  <div class="card" id="result" hidden></div>
+
+  <div class="ad">広告スペース</div>
+
+  <div class="card faq">
+    <h2>配偶者控除のよくある質問</h2>
+    <h3>2026年は何が変わった？</h3>
+    <p>配偶者控除の対象になる配偶者の所得が「58万円以下」から「62万円以下」に引き上げられ、給与だけなら年収136万円まで（去年までは123万円まで）配偶者控除が受けられるようになりました。配偶者特別控除も、給与だけなら年収207万円まで受けられます。</p>
+    <h3>配偶者控除と配偶者特別控除の違いは？</h3>
+    <p>配偶者の年収が136万円以下なら「配偶者控除」、136万円を超えて207万円以下なら「配偶者特別控除」です。ただし、配偶者特別控除も年収169万円までは配偶者控除と同じ38万円（所得税）なので、136万円を超えても家族の税金は増えません。</p>
+    <h3>本人の年収が高いと受けられない？</h3>
+    <p>本人の合計所得が900万円（給与だけなら年収1,095万円）を超えると控除額が段階的に減り、1,000万円（年収1,195万円）を超えると受けられなくなります。</p>
+    <h3>年末調整ではどこに書く？</h3>
+    <p>「給与所得者の基礎控除申告書 兼 配偶者控除等申告書 兼 所得金額調整控除申告書 兼 特定親族特別控除申告書」の配偶者の欄に、配偶者の見込みの収入と所得を書きます。</p>
+  </div>
+
+  <div class="card" id="related"></div>
+
+  <footer>国税庁「源泉所得税の改正のあらまし（令和8年4月）」の控除額表などをもとにした概算です。節税額は、本人の所得税率と住民税10%から計算した目安です。</footer>
+</div>
+
+<script src="../assets/site.js"></script>
+<script src="../assets/calc.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+function calc() {
+  const out = $("result");
+  out.hidden = false;
+  const self = (Number($("self").value) || 0) * MAN, sp = (Number($("sp").value) || 0) * MAN;
+  if (!self) { out.innerHTML = '<p class="err">本人の年収を入力してください。</p>'; return; }
+  const old = $("old").checked;
+  const selfInc = salaryIncome(self);
+  const d = spouseDeduction(selfInc, salaryIncome(sp), old);
+  const rate = supporterRate(self, false, d.it);
+  const save = Math.floor(d.it * rate * 1.021 + d.rt * 0.1);
+
+  const pts = [100, 136, 150, 160, 169, 174, 179, 184, 189, 194, 199, 204, 207, 210];
+  const rows = [...new Set(pts.concat(sp / MAN))].sort((a, b) => a - b).map(v => {
+    const x = spouseDeduction(selfInc, salaryIncome(v * MAN), old);
+    return `<tr class="${v * MAN === sp ? "me" : ""}"><td>${v}万円</td><td>${x.type}</td><td class="num">${x.it / MAN}万円</td><td class="num">${x.rt / MAN}万円</td><td class="num">${yen(Math.floor(x.it * rate * 1.021 + x.rt * 0.1))}</td></tr>`;
+  });
+
+  out.innerHTML = `
+    <div class="big">
+      <div class="stat good"><div class="k">控除の種類</div><div class="v">${d.type}</div></div>
+      <div class="stat"><div class="k">控除額（所得税／住民税）</div><div class="v">${d.it / MAN}万円／${d.rt / MAN}万円</div></div>
+      <div class="stat good"><div class="k">安くなる税金（年間の目安）</div><div class="v">${yen(save)}</div></div>
+    </div>
+    <table class="info">
+      <tr><td>配偶者の所得（年収 − 給与所得控除）</td><td class="num">${yen(salaryIncome(sp))}</td></tr>
+      <tr><td>本人の合計所得</td><td class="num">${yen(selfInc)}</td></tr>
+      <tr><td>本人の所得税率</td><td class="num">${Math.round(rate * 100)}%</td></tr>
+    </table>
+    <h2 style="margin-top:18px">配偶者の年収ごとの控除額（本人の年収${self / MAN}万円の場合）</h2>
+    <div style="overflow-x:auto"><table class="info">
+      <tr><th>配偶者の年収</th><th>控除の種類</th><th class="num">所得税</th><th class="num">住民税</th><th class="num">安くなる税金</th></tr>
+      ${rows.join("")}
+    </table></div>
+    <p class="note">パートの年収を増やしたとき、本人の手取りと社会保険まで含めてどうなるかは → <a href="/nenmatsu/">年収の壁 シミュレーター</a></p>`;
+  out.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("calc").addEventListener("click", calc);
+</script>
+</body>
+</html>

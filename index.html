@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>年収の壁 シミュレーター【2026年】｜パートの手取りと家族の税金を計算（119万・130万・136万・178万）</title>
+<meta name="description" content="パート・アルバイトの年収を入れるだけで、本人の税金・社会保険料・手取りと、扶養している家族の税金がどう変わるかを計算。2026年の新しい年収の壁（住民税119万円、扶養136万円、所得税178万円、106万円の壁の撤廃）に対応した無料シミュレーターです。">
+<link rel="canonical" href="https://harryquad.github.io/nenmatsu/">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.walls{list-style:none;margin:0;padding:0}
+.walls li{padding:10px 0;border-bottom:1px solid var(--line)}
+.walls b{display:inline-block;min-width:5.5em;color:var(--accent)}
+.walls .passed b{color:var(--warn)}
+tr.me td{background:var(--accent-soft);font-weight:700}
+tr.drop td.num:last-child{color:var(--err)}
+.chart svg{width:100%;height:auto;display:block}
+.chart .axis{stroke:var(--line)}
+.chart .lbl{fill:var(--muted);font-size:11px}
+.chart .line{fill:none;stroke:var(--accent);stroke-width:2.5}
+.chart .line2{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 3}
+.chart .dot{fill:var(--accent)}
+.legend{display:flex;gap:16px;font-size:.8rem;color:var(--muted);margin-top:6px;flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:14px;height:3px;margin-right:5px;vertical-align:middle;background:var(--accent)}
+.legend span.l2::before{background:var(--muted)}
+</style>
+</head>
+<body>
+<header class="site-header"><div><a href="/nenmatsu/">年収の壁・年末調整 かんたん計算</a></div></header>
+<div class="wrap">
+  <h1>年収の壁 シミュレーター（2026年）</h1>
+  <p class="lead">パート・アルバイトで働く人の年収ごとに、<strong>本人の手取り</strong>と<strong>扶養している家族の税金</strong>がどう変わるかを計算します。2026年から変わった<strong>新しい年収の壁</strong>（住民税119万円・扶養136万円・所得税178万円、106万円の壁の撤廃）に対応しています。</p>
+
+  <div class="card">
+    <div class="row">
+      <div class="field">
+        <label for="rel">働く人は、扶養している人から見て</label>
+        <select id="rel">
+          <option value="spouse">配偶者（妻・夫）</option>
+          <option value="student">子ども（19〜22歳・大学生など）</option>
+          <option value="teen">子ども（16〜18歳・高校生など）</option>
+        </select>
+      </div>
+      <div class="field" id="ageField">
+        <label for="age">働く人の年齢</label>
+        <select id="age">
+          <option value="u40">39歳以下</option>
+          <option value="40">40〜59歳</option>
+          <option value="60">60〜69歳</option>
+          <option value="70">70歳以上</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="wage">働く人の年収（予定）</label><input type="number" id="wage" min="0" value="130">
+        <div class="hint">万円単位（交通費を除く額面）</div></div>
+      <div class="field"><label for="sup">扶養している人の年収</label><input type="number" id="sup" min="0" value="500">
+        <div class="hint">万円単位（会社員の額面）</div></div>
+    </div>
+    <div class="field" id="shahoField">
+      <label for="shaho">勤務先の社会保険</label>
+      <select id="shaho">
+        <option value="none">加入しない働き方（週20時間未満、または従業員50人以下の会社）</option>
+        <option value="company">加入する働き方（従業員51人以上の会社で週20時間以上など）</option>
+      </select>
+      <div class="hint">2026年10月から「月8.8万円（106万円）」の条件がなくなり、従業員51人以上の会社で週20時間以上働くと、年収に関係なく社会保険に加入します</div>
+    </div>
+    <div class="field" id="kokuhoField">
+      <label for="kokuho">扶養を外れて国民健康保険・国民年金に入る場合の保険料（年額）</label>
+      <input type="number" id="kokuho" min="0" value="300000">
+      <div class="hint" id="kokuhoHint">円単位。住んでいる地域や収入で変わります。わかる場合は市区町村のシミュレーションの金額を入れてください</div>
+    </div>
+    <button id="calc">シミュレーションする</button>
+  </div>
+
+  <div class="card" id="result" hidden></div>
+
+  <div class="ad">広告スペース</div>
+
+  <div class="card faq">
+    <h2>2026年の年収の壁のよくある質問</h2>
+    <h3>103万円の壁はなくなった？</h3>
+    <p>2026年分からは、給与所得控除の最低額が74万円、所得税の基礎控除が104万円（所得489万円以下の場合）になり、本人に所得税がかかり始めるのは年収178万円からになりました。扶養している家族の税金の控除（配偶者控除・扶養控除）が使えるのは、年収136万円までです。</p>
+    <h3>いちばん気をつけるべき壁は？</h3>
+    <p>手取りが大きく減るのは、社会保険の扶養から外れる<strong>130万円</strong>（19〜22歳は150万円、60歳以上は180万円）です。自分で国民健康保険・国民年金に入ると年間数十万円の負担が増え、年収160万円前後まで働かないと、世帯の手取りが130万円未満で働いたときより少なくなることがあります（保険料の額によって変わります）。</p>
+    <h3>残業で130万円を超えたらどうなる？</h3>
+    <p>2026年4月から、社会保険の扶養の判定は、原則として労働契約（労働条件通知書など）に書かれた賃金で行われます。契約上の年収が130万円未満なら、思いがけない残業で一時的に超えても、扶養から外れないのが基本です。</p>
+    <h3>106万円の壁はどうなった？</h3>
+    <p>2026年10月に「月額賃金8.8万円以上」という条件がなくなりました。従業員51人以上の会社では、週20時間以上働くと年収に関係なく社会保険に加入します。会社の社会保険に入ると保険料はかかりますが、将来の年金が増え、病気やけがで休んだときの手当ももらえます。</p>
+  </div>
+
+  <div class="card" id="related"></div>
+
+  <footer>令和8年（2026年）分の所得税・令和9年度分の住民税、2026年10月時点の社会保険のルールをもとにした概算です。住民税がかかり始める年収は地域によって少し異なります。会社の社会保険料は年収の約15%（40歳以上は約15.8%）として計算しています。</footer>
+</div>
+
+<script src="assets/site.js"></script>
+<script src="assets/calc.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const KOKUHO_DEFAULT = { spouse: 300000, student: 60000, teen: 60000, spouse60: 150000 };
+function syncForm() {
+  const rel = $("rel").value;
+  $("ageField").hidden = rel !== "spouse";
+  $("shahoField").hidden = rel !== "spouse";
+  const age = $("age").value;
+  $("kokuho").value = rel === "spouse" ? (age === "60" || age === "70" ? KOKUHO_DEFAULT.spouse60 : KOKUHO_DEFAULT.spouse) : KOKUHO_DEFAULT[rel];
+  $("kokuhoHint").textContent = rel === "spouse"
+    ? (age === "60" || age === "70" ? "円単位。60歳以上は国民年金の加入義務がないため、国民健康保険料のみの目安です。" : "円単位。国民年金（年約21万円）＋国民健康保険の目安です。住んでいる地域や収入で変わります。")
+    : "円単位。学生は国民年金の「学生納付特例」を使うと納付を先送りできるため、国民健康保険料のみの目安です。";
+}
+$("rel").addEventListener("change", syncForm);
+$("age").addEventListener("change", syncForm);
+
+function model() {
+  const rel = $("rel").value, age = $("age").value;
+  const over40 = rel === "spouse" && age !== "u40";
+  const threshold = rel === "student" ? 1500000 : rel === "spouse" && (age === "60" || age === "70") ? 1800000 : 1300000;
+  const company = rel === "spouse" && $("shaho").value === "company";
+  const kokuho = Math.max(0, Number($("kokuho").value) || 0);
+  const sup = (Number($("sup").value) || 0) * MAN;
+  const supIncome = salaryIncome(sup);
+  const ded = inc => rel === "spouse" ? spouseDeduction(supIncome, inc, age === "70")
+    : dependentDeduction(rel === "student" ? 20 : 17, inc);
+  const max = ded(0);
+  const rate = supporterRate(sup, false, max.it);
+
+  const at = salary => {
+    const social = company ? socialEstimate(salary, over40) : salary >= threshold ? kokuho : 0;
+    const t = personTax(salary, social);
+    const d = ded(t.income);
+    const familyUp = Math.floor((max.it - d.it) * rate * 1.021 + (max.rt - d.rt) * 0.1);
+    const net = salary - social - t.incomeTax - t.residentTax;
+    return { salary, social, ...t, d, familyUp, net, household: net - familyUp };
+  };
+  return { rel, age, threshold, company, at, rate, max };
+}
+
+function chart(m) {
+  const xs = []; for (let s = 800000; s <= 2400000; s += 10000) xs.push(m.at(s));
+  const W = 640, H = 240, L = 48, R = 10, T = 12, B = 28;
+  const minY = Math.min(...xs.map(p => Math.min(p.household, p.net))), maxY = Math.max(...xs.map(p => p.net));
+  const x = v => L + (v - 800000) / 1600000 * (W - L - R);
+  const y = v => T + (1 - (v - minY) / (maxY - minY)) * (H - T - B);
+  const path = key => xs.map((p, i) => `${i ? "L" : "M"}${x(p.salary).toFixed(1)},${y(p[key]).toFixed(1)}`).join("");
+  let grid = "";
+  for (let s = 800000; s <= 2400000; s += 200000) grid += `<line class="axis" x1="${x(s)}" y1="${T}" x2="${x(s)}" y2="${H - B}"/><text class="lbl" x="${x(s)}" y="${H - 10}" text-anchor="middle">${s / MAN}万</text>`;
+  const step = Math.ceil((maxY - minY) / 4 / 100000) * 100000;
+  for (let v = Math.ceil(minY / step) * step; v <= maxY; v += step) grid += `<line class="axis" x1="${L}" y1="${y(v)}" x2="${W - R}" y2="${y(v)}"/><text class="lbl" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${Math.round(v / MAN)}万</text>`;
+  const me = m.at((Number($("wage").value) || 0) * MAN);
+  const dot = me.salary >= 800000 && me.salary <= 2400000 ? `<circle class="dot" cx="${x(me.salary)}" cy="${y(me.household)}" r="5"/>` : "";
+  return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="年収ごとの手取りのグラフ">${grid}<path class="line2" d="${path("net")}"/><path class="line" d="${path("household")}"/>${dot}</svg>
+    <div class="legend"><span>世帯で見た手取り（本人の手取り − 家族の税金の増加分）</span><span class="l2">本人の手取り</span></div></div>`;
+}
+
+function walls(m, wage) {
+  const list = [
+    [1060000, "106万円", "2026年10月に撤廃。従業員51人以上の会社で週20時間以上働くと、年収に関係なく社会保険に加入します。"],
+    [1190000, "119万円", "超えると本人に住民税がかかり始めます（年数千円から。地域によって少し違います）。"],
+    [m.threshold, `${m.threshold / MAN}万円`, `超えると社会保険の扶養から外れ、自分で保険料を払います${m.company ? "（会社の社会保険に加入している場合は関係ありません）" : ""}。2026年4月からは労働契約の賃金で判定し、残業代は含めません。`],
+    [1780000, "178万円", "超えると本人に所得税がかかり始めます。"],
+  ];
+  if (m.rel === "spouse") {
+    list.push([1360000, "136万円", "超えると配偶者控除から配偶者特別控除に切り替わります。ただし控除額は169万円まで同じなので、家族の税金は増えません。"]);
+    list.push([1690000, "169万円", "超えると配偶者特別控除が少しずつ減り、家族の税金が増え始めます。"]);
+    list.push([2070000, "207万円", "超えると配偶者特別控除がなくなります。"]);
+  } else if (m.rel === "student") {
+    list.push([1360000, "136万円", "超えると特定扶養控除から特定親族特別控除に切り替わります。控除額は159万円まで同じ（所得税63万円）です。"]);
+    list.push([1970000, "197万円", "超えると特定親族特別控除がなくなり、家族の控除がゼロになります。"]);
+  } else {
+    list.push([1360000, "136万円", "超えると家族の扶養控除（38万円）がなくなり、家族の税金が年に数万円増えます。"]);
+  }
+  list.sort((a, b) => a[0] - b[0]);
+  return `<ul class="walls">${list.map(w => `<li class="${wage > w[0] ? "passed" : ""}"><b>${w[1]}</b>${w[2]}${wage > w[0] ? "（超えています）" : ""}</li>`).join("")}</ul>`;
+}
+
+function calc() {
+  const out = $("result");
+  out.hidden = false;
+  const wage = (Number($("wage").value) || 0) * MAN;
+  const m = model();
+  const me = m.at(wage);
+  const base = [800000, 1000000, 1100000, 1190000, 1200000, m.threshold - 10000, m.threshold, 1360000, 1400000, 1500000, 1600000, 1690000, 1780000, 1800000, 1900000, 2000000, 2070000, 2200000];
+  const rows = [...new Set(base.concat(wage))].filter(s => s > 0).sort((a, b) => a - b).map(m.at);
+  const noLoss = (() => { // 扶養内の手取りを取り戻せる年収
+    const inside = m.at(m.threshold - 10000).household;
+    for (let s = m.threshold; s <= 3000000; s += 10000) if (m.at(s).household >= inside) return s;
+    return null;
+  })();
+
+  out.innerHTML = `
+    <div class="big">
+      <div class="stat good"><div class="k">本人の手取り</div><div class="v">${yen(me.net)}</div></div>
+      <div class="stat ${me.familyUp ? "warn" : ""}"><div class="k">家族の税金の増加</div><div class="v">${yen(me.familyUp)}</div></div>
+      <div class="stat"><div class="k">世帯で見た手取り</div><div class="v">${yen(me.household)}</div></div>
+    </div>
+    <table class="info">
+      <tr><td>本人の社会保険料</td><td class="num">${yen(me.social)}</td></tr>
+      <tr><td>本人の所得税</td><td class="num">${yen(me.incomeTax)}</td></tr>
+      <tr><td>本人の住民税</td><td class="num">${yen(me.residentTax)}</td></tr>
+      <tr><td>家族が受けられる控除</td><td class="num">${me.d.type}（所得税 ${me.d.it / MAN}万円）</td></tr>
+    </table>
+    ${!m.company && noLoss ? `<p class="note">社会保険の扶養を外れると、<strong>年収${Math.ceil(noLoss / MAN)}万円くらい</strong>まで働かないと、${m.threshold / MAN}万円未満で働いたときの世帯の手取りに届きません。</p>` : ""}
+    <h2 style="margin-top:18px">年収ごとの手取り</h2>
+    ${chart(m)}
+    <div style="overflow-x:auto;margin-top:12px"><table class="info">
+      <tr><th>年収</th><th class="num">本人の税金＋保険料</th><th class="num">家族の税金の増加</th><th class="num">世帯で見た手取り</th></tr>
+      ${rows.map((r, i) => `<tr class="${r.salary === wage ? "me" : ""} ${i && r.household < rows[i - 1].household ? "drop" : ""}"><td>${(r.salary / MAN).toLocaleString("ja-JP")}万円</td><td class="num">${yen(r.social + r.incomeTax + r.residentTax)}</td><td class="num">${yen(r.familyUp)}</td><td class="num">${yen(r.household)}</td></tr>`).join("")}
+    </table></div>
+    <p class="hint">赤字の行は、年収が増えたのに世帯の手取りが減る部分です。</p>
+    <h2 style="margin-top:18px">あなたに関係する年収の壁</h2>
+    ${walls(m, wage)}`;
+  out.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("calc").addEventListener("click", calc);
+syncForm();
+</script>
+</body>
+</html>

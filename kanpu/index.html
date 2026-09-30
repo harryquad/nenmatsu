@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>年末調整 還付金 計算【2026年・令和8年分】｜いくら戻る？追加で引かれる？</title>
+<meta name="description" content="年収・給与明細の所得税の合計・各種控除を入れるだけで、2026年の年末調整でいくら戻ってくるか（追加で引かれるか）の目安を計算。基礎控除104万円・給与所得控除74万円への引き上げを反映した無料ツールです。">
+<link rel="canonical" href="https://harryquad.github.io/nenmatsu/kanpu/">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header class="site-header"><div><a href="/nenmatsu/">年収の壁・年末調整 かんたん計算</a></div></header>
+<div class="wrap">
+  <h1>年末調整 還付金 計算（2026年）</h1>
+  <p class="lead">2026年の年末調整で<strong>いくら戻ってくるか</strong>（または<strong>追加で引かれるか</strong>）の目安を計算します。2026年は、基礎控除や給与所得控除の引き上げが<strong>12月の年末調整でまとめて反映される</strong>ため、例年より多く戻ってくる人が多い年です。</p>
+
+  <div class="card">
+    <h2>収入と引かれた税金</h2>
+    <div class="row">
+      <div class="field"><label for="annual">2026年の給与・賞与の合計（額面）</label><input type="number" id="annual" min="0" value="500">
+        <div class="hint">万円単位（12月分の見込みを含む）</div></div>
+      <div class="field"><label for="withheld">給与・賞与から引かれた所得税の合計</label><input type="number" id="withheld" min="0" placeholder="例：120000">
+        <div class="hint">円単位。1〜12月の給与明細・賞与明細の「所得税」を足した金額（12月分は見込み）</div></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="social">社会保険料の合計（年額）</label><input type="number" id="social" min="0" placeholder="空欄なら自動で見積もり">
+        <div class="hint">円単位。給与明細の健康保険・厚生年金・雇用保険などの合計</div></div>
+      <div class="field"><label for="age">年齢</label><select id="age"><option value="u40">39歳以下</option><option value="40">40〜64歳</option></select></div>
+    </div>
+    <h2>家族</h2>
+    <div class="row">
+      <div class="field"><label for="spouse">配偶者</label>
+        <select id="spouse"><option value="none">いない・控除の対象外</option><option value="yes">いる</option></select></div>
+      <div class="field" id="spWageField" hidden><label for="spWage">配偶者の年収（給与）</label><input type="number" id="spWage" min="0" value="100">
+        <div class="hint">万円単位</div></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="gen">扶養している16〜18歳・23〜69歳の家族</label><input type="number" id="gen" min="0" max="10" value="0"></div>
+      <div class="field"><label for="tok">扶養している19〜22歳の家族</label><input type="number" id="tok" min="0" max="10" value="0">
+        <div class="hint">年収136万円以下の場合</div></div>
+    </div>
+    <h2>そのほかの控除</h2>
+    <div class="row">
+      <div class="field"><label for="life">生命保険料控除</label><input type="number" id="life" min="0" value="0">
+        <div class="hint">円単位。<a href="/nenmatsu/seiho/">生命保険料控除の計算</a>で計算すると自動で入ります</div></div>
+      <div class="field"><label for="eq">地震保険料控除</label><input type="number" id="eq" min="0" value="0"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="ideco">iDeCo・小規模企業共済の掛金</label><input type="number" id="ideco" min="0" value="0">
+        <div class="hint">円単位（年額）</div></div>
+      <div class="field"><label for="loan">住宅ローン控除額</label><input type="number" id="loan" min="0" value="0">
+        <div class="hint">円単位。年末調整で受ける控除額（2年目以降）</div></div>
+    </div>
+    <button id="calc">還付金を計算する</button>
+  </div>
+
+  <div class="card" id="result" hidden></div>
+
+  <div class="ad">広告スペース</div>
+
+  <div class="card faq">
+    <h2>年末調整のよくある質問</h2>
+    <h3>2026年は還付金が多い？</h3>
+    <p>2026年は、所得税の基礎控除（最大104万円）と給与所得控除の最低額（74万円）が引き上げられましたが、11月までの給与からは改正前の方法で所得税が引かれています。その差額が12月の年末調整でまとめて精算されるため、例年より多く戻ってくる人が多くなります。</p>
+    <h3>還付金はいつもらえる？</h3>
+    <p>多くの会社では、12月（または翌年1月）の給与に上乗せして戻ってきます。給与明細の「年末調整還付」などの欄で確認できます。</p>
+    <h3>追加で引かれることもある？</h3>
+    <p>年の途中で扶養家族が減った、年末調整の申告書を出していない控除がある、年の途中で給料が大きく上がった、といった場合は、12月の給与から不足分が追加で引かれることがあります。</p>
+  </div>
+
+  <div class="card" id="related"></div>
+
+  <footer>令和8年（2026年）分の所得税の計算方法による概算です。実際の年末調整では、国税庁の「年末調整等のための給与所得控除後の給与等の金額の表」を使うため、数百円〜数千円ずれることがあります。住民税は年末調整の対象ではありません。</footer>
+</div>
+
+<script src="../assets/site.js"></script>
+<script src="../assets/calc.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const n = id => Math.max(0, Number($(id).value) || 0);
+$("spouse").addEventListener("change", () => ($("spWageField").hidden = $("spouse").value !== "yes"));
+try {
+  const s = JSON.parse(localStorage.getItem("nenmatsu-insurance") || "null");
+  if (s) { $("life").value = s.life || 0; $("eq").value = s.eq || 0; }
+} catch {}
+
+function calc() {
+  const out = $("result");
+  out.hidden = false;
+  const annual = n("annual") * MAN;
+  if (!annual) { out.innerHTML = '<p class="err">年収を入力してください。</p>'; return; }
+  if ($("withheld").value === "") { out.innerHTML = '<p class="err">給与・賞与から引かれた所得税の合計を入力してください（給与明細の「所得税」の欄を1年分足した金額です）。</p>'; return; }
+  const inc = salaryIncome(annual);
+  const social = n("social") || socialEstimate(annual, $("age").value === "40");
+  const sp = $("spouse").value === "yes" ? spouseDeduction(inc, salaryIncome(n("spWage") * MAN)) : { it: 0, type: "なし" };
+  const deps = Math.floor(n("gen")) * 380000 + Math.floor(n("tok")) * 630000;
+  const basic = basicIT(inc);
+  const total = social + n("ideco") + n("life") + n("eq") + sp.it + deps + basic;
+  const taxable = floor1000(inc - total);
+  const rate = marginalRate(taxable);
+  const [, , minus] = taxable > 0 ? BRACKETS.find(b => taxable <= b[0]) : [0, 0, 0];
+  const base = Math.max(0, Math.round(taxable * rate - minus) - Math.floor(n("loan")));
+  const yearTax = Math.floor(base * 1021 / 1000 / 100) * 100;
+  const withheld = Math.floor(n("withheld"));
+  const diff = withheld - yearTax;
+
+  out.innerHTML = `
+    <div class="big">
+      <div class="stat ${diff >= 0 ? "good" : "warn"}"><div class="k">${diff >= 0 ? "戻ってくる額（目安）" : "追加で引かれる額（目安）"}</div><div class="v">${yen(Math.abs(diff))}</div></div>
+      <div class="stat"><div class="k">1年間の正しい所得税</div><div class="v">${yen(yearTax)}</div></div>
+      <div class="stat"><div class="k">すでに引かれた所得税</div><div class="v">${yen(withheld)}</div></div>
+    </div>
+    <table class="info">
+      <tr><td>給与所得（年収 − 給与所得控除）</td><td class="num">${yen(inc)}</td></tr>
+      <tr><td>社会保険料控除${n("social") ? "" : "（目安）"}</td><td class="num">${yen(social)}</td></tr>
+      <tr><td>基礎控除</td><td class="num">${yen(basic)}</td></tr>
+      <tr><td>配偶者控除・配偶者特別控除</td><td class="num">${yen(sp.it)}</td></tr>
+      <tr><td>扶養控除</td><td class="num">${yen(deps)}</td></tr>
+      <tr><td>生命保険料・地震保険料・iDeCoなど</td><td class="num">${yen(n("life") + n("eq") + n("ideco"))}</td></tr>
+      <tr><td>課税所得</td><td class="num">${yen(taxable)}</td></tr>
+      <tr><td>所得税率</td><td class="num">${Math.round(rate * 100)}%</td></tr>
+      ${n("loan") ? `<tr><td>住宅ローン控除</td><td class="num">−${yen(n("loan"))}</td></tr>` : ""}
+    </table>
+    ${n("loan") && base === 0 ? '<p class="note">住宅ローン控除が所得税より多いため、所得税は0円になります。引ききれない分は、翌年の住民税から差し引かれます（上限あり）。</p>' : ""}
+    <p class="note">給与明細の「所得税」の合計がずれていると、結果も大きくずれます。12月の給与明細が届いたら、実際の金額で確認してみてください。</p>`;
+  out.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("calc").addEventListener("click", calc);
+</script>
+</body>
+</html>
